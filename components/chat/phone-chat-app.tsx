@@ -37,8 +37,8 @@ export const PhoneChatApp = memo(function PhoneChatApp({ onClose, initialSession
     const [dbReady, setDbReady] = useState(false);
     const [hideTabBar, setHideTabBar] = useState(false);
     
-    const [isSearchActive, setIsSearchActive] = useState(false); // 【重点修复】：独立的搜索状态
-    const [showAddMenu, setShowAddMenu] = useState(false); // 【重点修复】：菜单状态
+    const [isSearchActive, setIsSearchActive] = useState(false);
+    const [showAddMenu, setShowAddMenu] = useState(false);
 
     const [pendingAddContactId, setPendingAddContactId] = useState<string | null>(null);
     const addContactReturnSessionRef = useRef<string | null>(null);
@@ -167,9 +167,8 @@ export const PhoneChatApp = memo(function PhoneChatApp({ onClose, initialSession
         setActiveTab("messages");
     };
 
-    // 【重点修复】加号菜单逻辑
     const handleAddAction = () => {
-        setIsSearchActive(false); // 打开菜单时自动关闭搜索框
+        setIsSearchActive(false);
         setShowAddMenu(prev => !prev);
     };
 
@@ -211,70 +210,68 @@ export const PhoneChatApp = memo(function PhoneChatApp({ onClose, initialSession
         <div className="chat-app absolute inset-0 flex flex-col overflow-hidden z-10 bg-[#FFFFFF] font-sans">
             {chatAppCSS && <style dangerouslySetInnerHTML={{ __html: scopeSessionCSS(chatAppCSS, ".chat-app") }} />}
             
-            {/* 👑 顶部微信风格导航栏 */}
-            <div className="bg-[#EDEDED] shrink-0 flex flex-col border-b border-[#E5E5E5] relative z-40">
-                <div className="h-[70px] px-4 flex items-center justify-between pt-[max(env(safe-area-inset-top,12px),12px)] pb-0">
-                    <div className="w-8 h-8 cursor-pointer" onClick={onClose}></div> {/* 空白区域点击退出 */}
-                    <span className="absolute left-1/2 -translate-x-1/2 font-bold text-[17px] text-[#000000] tracking-wide">微信</span>
-                    <div className="flex items-center gap-1 relative">
-                        {/* 【重点修复】放大镜状态切换 */}
-                        <button onClick={() => { setIsSearchActive(prev => !prev); setShowAddMenu(false); }} className="w-9 h-9 flex items-center justify-center text-[#181818]">
-                            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                        </button>
-                        <div className="relative">
-                            <button onClick={handleAddAction} className="w-9 h-9 flex items-center justify-center text-[#181818]">
-                                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-                            </button>
-                            {showAddMenu && (
-                                <div className="absolute top-[calc(100%+8px)] right-0 bg-white rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.12)] py-1 w-[140px] z-50 border border-[#f0f0f0]">
-                                    <button onClick={() => handleMenuItemClick("group_chat")} className="flex items-center gap-3 w-full px-4 py-3 hover:bg-[#f5f5f5] text-[15px] text-[#333]">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                                        发起群聊
-                                    </button>
-                                    <button onClick={() => handleMenuItemClick("add_friend")} className="flex items-center gap-3 w-full px-4 py-3 hover:bg-[#f5f5f5] text-[15px] text-[#333]">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="22" y1="11" x2="22" y2="17"/><line x1="19" y1="14" x2="25" y2="14"/></svg>
-                                        添加朋友
-                                    </button>
-                                    <button onClick={() => handleMenuItemClick("scan")} className="flex items-center gap-3 w-full px-4 py-3 hover:bg-[#f5f5f5] text-[15px] text-[#333] border-t border-[#f5f5f5]">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="14" width="8" height="8" rx="1"/></svg>
-                                        扫一扫
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-                
-                {/* 【重点修复】自定义的搜索栏下拉框 */}
-                {isSearchActive && (
-                    <div className="px-4 py-3 bg-[#FFFFFF] border-t border-[#E5E5E5] flex items-center gap-3">
-                        <div className="flex-1 bg-[#F4F5F7] rounded-lg px-3 py-2 flex items-center gap-2">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                            <input autoFocus placeholder="搜索" className="w-full bg-transparent outline-none text-[#000] placeholder-[#999] text-[15px]" />
-                        </div>
-                        <button onClick={() => setIsSearchActive(false)} className="text-[#000] text-[15px] font-medium">取消</button>
-                    </div>
-                )}
-            </div>
-
             <div className="chat-main-content relative flex-1 flex flex-col overflow-hidden" {...(activeSession || activeMascot ? { "data-covered-by-room": "" } : {})}>
                 
-                {/* 消息页面，用 CSS 隐藏掉原生头部 */}
+                {/* 👑 彻底重写消息列表页结构，确保列表不空白，顶栏完美覆盖 */}
                 {activeTab === "messages" && (
-                    <div className="relative flex-1 flex flex-col overflow-hidden chat-list-wrapper">
-                        <style dangerouslySetInnerHTML={{__html: `
-                            .chat-list-wrapper > div > div:first-child { display: none !important; }
-                            .chat-list-wrapper > div > h1:first-of-type { display: none !important; }
-                            .chat-list-wrapper > div > div:nth-child(3) { display: none !important; }
-                            .chat-list-wrapper > div > div:nth-child(4) { display: none !important; }
-                            .chat-list-wrapper .online-indicator { display: none !important; }
-                        `}} />
-                        <ChatMessageList
-                            onCloseApp={onClose}
-                            activeSession={activeSession}
-                            onSelectSession={(session) => { setActiveMascot(false); setActiveSession(session); }}
-                            onSelectMascot={handleSelectMascot}
-                        />
+                    <div className="relative flex-1 flex flex-col overflow-hidden">
+                        {/* 底层：原生列表组件（不会被删除或隐藏了，只是顶部被我们的页面盖住） */}
+                        <div className="absolute inset-0 overflow-y-auto pt-[70px]">
+                            <ChatMessageList
+                                onCloseApp={onClose}
+                                activeSession={activeSession}
+                                onSelectSession={(session) => { setActiveMascot(false); setActiveSession(session); }}
+                                onSelectMascot={handleSelectMascot}
+                            />
+                        </div>
+
+                        {/* 覆盖层：微信风格悬浮顶栏。用不透明背景完美盖住原生头部，且不会误伤列表 */}
+                        <div className="absolute top-0 left-0 right-0 z-30 bg-[#EDEDED] h-[70px] flex items-center justify-between border-b border-[#E5E5E5] px-4 pt-[max(env(safe-area-inset-top,12px),12px)] pb-2">
+                            {/* 隐形退出键（点左侧空白处退出） */}
+                            <div className="w-8 h-8 cursor-pointer flex items-center justify-center" onClick={onClose}></div>
+                            {/* 居中标题 */}
+                            <span className="absolute left-1/2 -translate-x-1/2 font-bold text-[17px] text-[#000000] tracking-wide">微信</span>
+                            {/* 右侧功能组（放大镜、加号及菜单） */}
+                            <div className="flex items-center gap-1">
+                                {/* 放大镜：调整容器中心对齐，解决偏下问题 */}
+                                <button onClick={() => { setIsSearchActive(!isSearchActive); setShowAddMenu(false); }} className="w-10 h-10 flex items-center justify-center text-[#181818]">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                                </button>
+                                {/* 加号及下拉菜单 */}
+                                <div className="relative">
+                                    <button onClick={handleAddAction} className="w-10 h-10 flex items-center justify-center text-[#181818]">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                                    </button>
+                                    {showAddMenu && (
+                                        <div className="absolute top-[calc(100%+8px)] right-0 bg-white rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.12)] py-1 w-[140px] z-50 border border-[#f0f0f0]">
+                                            <button onClick={() => handleMenuItemClick("group_chat")} className="flex items-center gap-3 w-full px-4 py-3 hover:bg-[#f5f5f5] text-[15px] text-[#333]">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                                发起群聊
+                                            </button>
+                                            <button onClick={() => handleMenuItemClick("add_friend")} className="flex items-center gap-3 w-full px-4 py-3 hover:bg-[#f5f5f5] text-[15px] text-[#333]">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="22" y1="11" x2="22" y2="17"/><line x1="19" y1="14" x2="25" y2="14"/></svg>
+                                                添加朋友
+                                            </button>
+                                            <button onClick={() => handleMenuItemClick("scan")} className="flex items-center gap-3 w-full px-4 py-3 hover:bg-[#f5f5f5] text-[15px] text-[#333] border-t border-[#f5f5f5]">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="14" width="8" height="8" rx="1"/></svg>
+                                                扫一扫
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 搜索下拉框：位于覆盖层下方，原生列表上方 */}
+                        {isSearchActive && (
+                            <div className="absolute top-[70px] left-0 right-0 z-20 px-4 py-3 bg-[#FFFFFF] border-b border-[#E5E5E5] flex items-center gap-3">
+                                <div className="flex-1 bg-[#F4F5F7] rounded-lg px-3 py-2 flex items-center gap-2">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                                    <input autoFocus placeholder="搜索" className="w-full bg-transparent outline-none text-[#000] placeholder-[#999] text-[15px]" />
+                                </div>
+                                <button onClick={() => setIsSearchActive(false)} className="text-[#000] text-[15px] font-medium">取消</button>
+                            </div>
+                        )}
                     </div>
                 )}
                 
