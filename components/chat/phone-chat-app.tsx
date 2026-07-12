@@ -37,8 +37,8 @@ export const PhoneChatApp = memo(function PhoneChatApp({ onClose, initialSession
     const [dbReady, setDbReady] = useState(false);
     const [hideTabBar, setHideTabBar] = useState(false);
     
-    // 【新增】悬浮菜单状态
-    const [showAddMenu, setShowAddMenu] = useState(false);
+    const [isSearchActive, setIsSearchActive] = useState(false); // 【重点修复】：独立的搜索状态
+    const [showAddMenu, setShowAddMenu] = useState(false); // 【重点修复】：菜单状态
 
     const [pendingAddContactId, setPendingAddContactId] = useState<string | null>(null);
     const addContactReturnSessionRef = useRef<string | null>(null);
@@ -60,10 +60,7 @@ export const PhoneChatApp = memo(function PhoneChatApp({ onClose, initialSession
         if (initialSessionId === prevInitSessionId.current) return;
         prevInitSessionId.current = initialSessionId;
         if (!dbReady) return;
-        if (!initialSessionId) {
-            setActiveSession(null);
-            return;
-        }
+        if (!initialSessionId) { setActiveSession(null); return; }
         const s = loadChatSessions().find(s => s.id === initialSessionId);
         if (s) setActiveSession(s);
     }, [initialSessionId, dbReady]);
@@ -140,38 +137,19 @@ export const PhoneChatApp = memo(function PhoneChatApp({ onClose, initialSession
         if (sharePayload && sess) {
             if (sharePayload.type === "music") {
                 pushChatMessage({
-                    sessionId: sess.id,
-                    role: "user",
-                    content: "",
+                    sessionId: sess.id, role: "user", content: "",
                     mediaType: "music_share",
-                    mediaData: {
-                        musicTitle: sharePayload.title,
-                        musicArtist: sharePayload.artist,
-                        label: `${sharePayload.title} - ${sharePayload.artist}`,
-                    },
+                    mediaData: { musicTitle: sharePayload.title, musicArtist: sharePayload.artist, label: `${sharePayload.title} - ${sharePayload.artist}` },
                 });
             } else {
                 const content = formatXiaohongshuShareForPrompt({
-                    author: sharePayload.authorName,
-                    title: sharePayload.title,
-                    body: sharePayload.body,
-                    description: sharePayload.description,
+                    author: sharePayload.authorName, title: sharePayload.title, body: sharePayload.body, description: sharePayload.description,
                 });
                 pushChatMessage({
-                    sessionId: sess.id,
-                    role: "user",
-                    content,
+                    sessionId: sess.id, role: "user", content,
                     mediaType: "xiaohongshu_note_share",
                     mediaData: {
-                        xiaohongshuAuthor: sharePayload.authorName,
-                        xiaohongshuTitle: sharePayload.title,
-                        xiaohongshuBody: sharePayload.body,
-                        xiaohongshuDescription: sharePayload.description,
-                        xiaohongshuNoteType: sharePayload.noteType,
-                        xiaohongshuTags: sharePayload.tags,
-                        xiaohongshuImageAssetId: sharePayload.imageAssetId,
-                        xiaohongshuCoverIcon: sharePayload.coverIcon,
-                        xiaohongshuTone: sharePayload.tone,
+                        xiaohongshuAuthor: sharePayload.authorName, xiaohongshuTitle: sharePayload.title, xiaohongshuBody: sharePayload.body, xiaohongshuDescription: sharePayload.description, xiaohongshuNoteType: sharePayload.noteType, xiaohongshuTags: sharePayload.tags, xiaohongshuImageAssetId: sharePayload.imageAssetId, xiaohongshuCoverIcon: sharePayload.coverIcon, xiaohongshuTone: sharePayload.tone,
                     },
                 });
             }
@@ -189,8 +167,9 @@ export const PhoneChatApp = memo(function PhoneChatApp({ onClose, initialSession
         setActiveTab("messages");
     };
 
-    // 【修复】加号下拉菜单处理
+    // 【重点修复】加号菜单逻辑
     const handleAddAction = () => {
+        setIsSearchActive(false); // 打开菜单时自动关闭搜索框
         setShowAddMenu(prev => !prev);
     };
 
@@ -199,10 +178,8 @@ export const PhoneChatApp = memo(function PhoneChatApp({ onClose, initialSession
         if (action === "add_friend") {
             addContactReturnSessionRef.current = activeSessionIdRef.current;
             setActiveTab("contacts");
-            setShowAddMenu(false);
             setActiveSession(null);
             setActiveMascot(false);
-            // 触发添加联系人的系统事件
             setTimeout(() => {
                 window.dispatchEvent(new CustomEvent(CHAT_OPEN_ADD_CONTACT_EVENT, { detail: { characterId: "" } }));
             }, 100);
@@ -212,7 +189,6 @@ export const PhoneChatApp = memo(function PhoneChatApp({ onClose, initialSession
             setActiveSession(null);
             setActiveMascot(false);
         } else if (action === "scan") {
-            // 如果你后续想支持扫一扫，可以在这里拓展
             alert("扫一扫功能开发中~");
         }
     };
@@ -235,44 +211,72 @@ export const PhoneChatApp = memo(function PhoneChatApp({ onClose, initialSession
         <div className="chat-app absolute inset-0 flex flex-col overflow-hidden z-10 bg-[#FFFFFF] font-sans">
             {chatAppCSS && <style dangerouslySetInnerHTML={{ __html: scopeSessionCSS(chatAppCSS, ".chat-app") }} />}
             
-            {/* 👑 顶部微信风格导航栏（移除返回箭头，增加高度） */}
-            <div className="bg-[#EDEDED] shrink-0 flex items-center justify-between border-b border-[#E5E5E5] h-[70px] px-4 pt-[max(env(safe-area-inset-top,12px),12px)] pb-0 relative z-40">
-                <div className="w-8 h-8 cursor-pointer" onClick={onClose}></div> {/* 空白区域点击退出 */}
-                <span className="absolute left-1/2 -translate-x-1/2 font-bold text-[17px] text-[#000000] tracking-wide">微信</span>
-                <div className="flex items-center gap-1 relative">
-                    {/* 放大镜 */}
-                    <button onClick={() => setShowAddMenu(false)} className="w-9 h-9 flex items-center justify-center text-[#181818]">
-                        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                    </button>
-                    {/* +号带下拉菜单 */}
-                    <div className="relative">
-                        <button onClick={handleAddAction} className="w-9 h-9 flex items-center justify-center text-[#181818]">
-                            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            {/* 👑 顶部微信风格导航栏 */}
+            <div className="bg-[#EDEDED] shrink-0 flex flex-col border-b border-[#E5E5E5] relative z-40">
+                <div className="h-[70px] px-4 flex items-center justify-between pt-[max(env(safe-area-inset-top,12px),12px)] pb-0">
+                    <div className="w-8 h-8 cursor-pointer" onClick={onClose}></div> {/* 空白区域点击退出 */}
+                    <span className="absolute left-1/2 -translate-x-1/2 font-bold text-[17px] text-[#000000] tracking-wide">微信</span>
+                    <div className="flex items-center gap-1 relative">
+                        {/* 【重点修复】放大镜状态切换 */}
+                        <button onClick={() => { setIsSearchActive(prev => !prev); setShowAddMenu(false); }} className="w-9 h-9 flex items-center justify-center text-[#181818]">
+                            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
                         </button>
-                        {showAddMenu && (
-                            <div className="absolute top-[calc(100%+8px)] right-0 bg-white rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.12)] py-1 w-[140px] z-50 border border-[#f0f0f0]">
-                                <button onClick={() => handleMenuItemClick("group_chat")} className="flex items-center gap-3 w-full px-4 py-3 hover:bg-[#f5f5f5] text-[15px] text-[#333]">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                                    发起群聊
-                                </button>
-                                <button onClick={() => handleMenuItemClick("add_friend")} className="flex items-center gap-3 w-full px-4 py-3 hover:bg-[#f5f5f5] text-[15px] text-[#333]">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="22" y1="11" x2="22" y2="17"/><line x1="19" y1="14" x2="25" y2="14"/></svg>
-                                    添加朋友
-                                </button>
-                                <button onClick={() => handleMenuItemClick("scan")} className="flex items-center gap-3 w-full px-4 py-3 hover:bg-[#f5f5f5] text-[15px] text-[#333] border-t border-[#f5f5f5]">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="14" width="8" height="8" rx="1"/></svg>
-                                    扫一扫
-                                </button>
-                            </div>
-                        )}
+                        <div className="relative">
+                            <button onClick={handleAddAction} className="w-9 h-9 flex items-center justify-center text-[#181818]">
+                                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                            </button>
+                            {showAddMenu && (
+                                <div className="absolute top-[calc(100%+8px)] right-0 bg-white rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.12)] py-1 w-[140px] z-50 border border-[#f0f0f0]">
+                                    <button onClick={() => handleMenuItemClick("group_chat")} className="flex items-center gap-3 w-full px-4 py-3 hover:bg-[#f5f5f5] text-[15px] text-[#333]">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                        发起群聊
+                                    </button>
+                                    <button onClick={() => handleMenuItemClick("add_friend")} className="flex items-center gap-3 w-full px-4 py-3 hover:bg-[#f5f5f5] text-[15px] text-[#333]">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="22" y1="11" x2="22" y2="17"/><line x1="19" y1="14" x2="25" y2="14"/></svg>
+                                        添加朋友
+                                    </button>
+                                    <button onClick={() => handleMenuItemClick("scan")} className="flex items-center gap-3 w-full px-4 py-3 hover:bg-[#f5f5f5] text-[15px] text-[#333] border-t border-[#f5f5f5]">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="14" width="8" height="8" rx="1"/></svg>
+                                        扫一扫
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
+                
+                {/* 【重点修复】自定义的搜索栏下拉框 */}
+                {isSearchActive && (
+                    <div className="px-4 py-3 bg-[#FFFFFF] border-t border-[#E5E5E5] flex items-center gap-3">
+                        <div className="flex-1 bg-[#F4F5F7] rounded-lg px-3 py-2 flex items-center gap-2">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                            <input autoFocus placeholder="搜索" className="w-full bg-transparent outline-none text-[#000] placeholder-[#999] text-[15px]" />
+                        </div>
+                        <button onClick={() => setIsSearchActive(false)} className="text-[#000] text-[15px] font-medium">取消</button>
+                    </div>
+                )}
             </div>
 
             <div className="chat-main-content relative flex-1 flex flex-col overflow-hidden" {...(activeSession || activeMascot ? { "data-covered-by-room": "" } : {})}>
                 
-                {/* 核心功能组件：完全保留原本的逻辑 */}
-                {activeTab === "messages" && <ChatMessageList onCloseApp={onClose} activeSession={activeSession} onSelectSession={(session) => { setActiveMascot(false); setActiveSession(session); }} onSelectMascot={handleSelectMascot} />}
+                {/* 消息页面，用 CSS 隐藏掉原生头部 */}
+                {activeTab === "messages" && (
+                    <div className="relative flex-1 flex flex-col overflow-hidden chat-list-wrapper">
+                        <style dangerouslySetInnerHTML={{__html: `
+                            .chat-list-wrapper > div > div:first-child { display: none !important; }
+                            .chat-list-wrapper > div > h1:first-of-type { display: none !important; }
+                            .chat-list-wrapper > div > div:nth-child(3) { display: none !important; }
+                            .chat-list-wrapper > div > div:nth-child(4) { display: none !important; }
+                            .chat-list-wrapper .online-indicator { display: none !important; }
+                        `}} />
+                        <ChatMessageList
+                            onCloseApp={onClose}
+                            activeSession={activeSession}
+                            onSelectSession={(session) => { setActiveMascot(false); setActiveSession(session); }}
+                            onSelectMascot={handleSelectMascot}
+                        />
+                    </div>
+                )}
                 
                 {activeTab === "contacts" && (
                     <ChatContactsList
@@ -296,7 +300,7 @@ export const PhoneChatApp = memo(function PhoneChatApp({ onClose, initialSession
                 {activeTab === "me" && <UserProfilePanel onClose={() => setActiveTab("messages")} />}
             </div>
 
-            {/* 👑 底部微信风格导航栏（浅灰背景、黑色线条） */}
+            {/* 👑 底部微信风格导航栏 */}
             <nav className="bg-[#F7F7F7] border-t border-[#D9D9D9] shrink-0 flex justify-around items-center h-[58px]" style={{ display: activeSession || activeMascot || hideTabBar ? "none" : "flex", paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 2px)" }}>
                 <button className="flex flex-col items-center gap-0.5 w-1/4" onClick={() => setActiveTab("messages")}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={activeTab === "messages" ? "#07C160" : "#000000"} strokeWidth="1.8"><path d="M8.5 11h.01M12 11h.01M15.5 11h.01M21 12c0 4.97-4.03 9-9 9-1.58 0-3.07-.41-4.37-1.13l-3.66 1.22 1.26-3.54A8.95 8.95 0 0 1 3 12c0-4.97 4.03-9 9-9s9 4.03 9 9z" /></svg>
@@ -316,7 +320,7 @@ export const PhoneChatApp = memo(function PhoneChatApp({ onClose, initialSession
                 </button>
             </nav>
 
-            {/* Chat Rooms — 聊天覆盖层，功能完全保留 */}
+            {/* 保留独立的聊天室覆盖层 */}
             {[...visitedSessions.values()].map(sess => (
                 <div key={sess.id} style={{ display: activeSession?.id === sess.id ? undefined : 'none' }} className="chat-room-layer absolute inset-0 z-50 bg-white">
                     <ChatRoom session={sess} onBack={() => setActiveSession(null)} />
@@ -324,10 +328,7 @@ export const PhoneChatApp = memo(function PhoneChatApp({ onClose, initialSession
             ))}
             {activeMascot && (
                 <div className="chat-room-layer absolute inset-0 z-50 bg-white">
-                    <MascotChatRoom
-                        onBack={() => setActiveMascot(false)}
-                        onDeleted={() => setActiveMascot(false)}
-                    />
+                    <MascotChatRoom onBack={() => setActiveMascot(false)} onDeleted={() => setActiveMascot(false)} />
                 </div>
             )}
         </div>
