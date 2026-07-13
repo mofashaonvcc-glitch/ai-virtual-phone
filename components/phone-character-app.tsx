@@ -2122,7 +2122,7 @@ function CharArchiveView({
                 <AutoResizingTextarea
                   value={briefPersona}
                   onChange={setBriefPersona}
-                  placeholder="点「AI 生成」自动压缩人设，或手写 100~200 字简介…"
+                  placeholder="点「AI 生成」自动压缩人设，或手写 150~200 字简介…"
                   minHeight={60}
                   style={{
                     width: "100%", background: "color-mix(in srgb, var(--c-input) 50%, transparent)",
