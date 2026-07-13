@@ -367,7 +367,7 @@ function FlipTransitionOverlay({ transit }: { transit: TransitionState }) {
                 <div className="w-full h-full bg-[#9b8aaa]" />
               )}
             </div>
-            {isStart && <div className="char-polaroid-text">{char.name || "UNNAMED"}</div>}
+            {isStart && <div className="char-polaroid-text">{char.name || "未命名"}</div>}
           </div>
         </div>
 
@@ -875,9 +875,10 @@ function CharListView({
             All field agents must maintain high alert.
             {hash % 4 === 0 && <div className="char-marker-circle" />}
           </div>
-          {hash % 2 === 0 && <div className="char-stamp-red" style={{ top: 120, right: 10 }}>RESTRICTED</div>}
-          {hash % 3 === 0 && <div className="char-handwriting red-ink" style={{ bottom: 20, right: 10 }}>* Verify ASAP *</div>}
-        </>
+          {hash % 2 === 0 && <div className="char-stamp-red" style={{ top: 
+        {hash % 2 === 0 && <div className="char-stamp-red" style={{ top: 120, right: 10 }}>RESTRICTED</div>}
+        {hash % 3 === 0 && <div className="char-handwriting red-ink" style={{ bottom: 20, right: 10 }}>* Verify ASAP *</div>}
+      </>
       );
     } else if (item.type === 'yellow-note') {
       baseClass = "char-sticky-note";
@@ -947,7 +948,7 @@ function CharListView({
   return (
     <>
       <PageShell
-        title={<strong style={{ fontWeight: 900, fontFamily: 'Impact, "Arial Black", sans-serif', fontSize: '1.15em', letterSpacing: '0.04em' }}>TARGET ARCHIVES</strong>}
+        title={<strong style={{ fontWeight: 900, fontFamily: 'Impact, "Arial Black", sans-serif', fontSize: '1.15em', letterSpacing: '0.04em' }}>卷宗</strong>}
         leftAction={
           <button
             className="flex items-center justify-center w-[34px] h-[34px] rounded-full bg-black/5 text-[#666] hover:bg-black/10 transition-colors"
@@ -976,20 +977,20 @@ function CharListView({
             <div className="wt-bottom-pill">
               <button className="wt-bottom-pill-btn" onClick={() => { pendingActionRef.current = 'import'; setShowStylePicker(true); }}>
                 <IconImport />
-                <span>IMPORT</span>
+                <span>导入</span>
               </button>
               <button className="wt-bottom-pill-btn" onClick={() => { pendingActionRef.current = 'create'; setShowStylePicker(true); }}>
                 <IconPlus />
-                <span>CREATE</span>
+                <span>创建</span>
               </button>
               {isEditing && (
                 <button className="wt-bottom-pill-btn" onClick={() => setIsPropsMenuOpen(true)}>
-                  <IconPlus /> <span>PROPS</span>
+                  <IconPlus /> <span>道具</span>
                 </button>
               )}
               <button className="wt-bottom-pill-btn wt-bottom-pill-active" onClick={() => setShowNpcGen(true)}>
                 <IconPlus />
-                <span>NPC</span>
+                <span>生成配角</span>
               </button>
               <input
                 ref={fileRef} type="file" accept=".json,.png,image/png,application/json" className="hidden"
@@ -1112,7 +1113,7 @@ function CharListView({
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
                     </button>
                   </div>
-                  <div className="char-polaroid-text" style={{ fontSize: 12.5 }}>{char.name || "UNNAMED"}</div>
+                  <div className="char-polaroid-text" style={{ fontSize: 12.5 }}>{char.name || "未命名"}</div>
                 </DraggableNode>
               );
             })}
@@ -1191,7 +1192,7 @@ function CharListView({
                     <CharAvatarFallback name={pendingPlacementChar.name} size="100%" />
                   )}
                 </div>
-                <div className="char-polaroid-text ts-10">{pendingPlacementChar.name || "UNNAMED"}</div>
+                <div className="char-polaroid-text ts-10">{pendingPlacementChar.name || "未命名"}</div>
               </div>
             ) : pendingBgType ? (
               <div className="scale-[0.6] origin-center">
@@ -1367,7 +1368,7 @@ function CharListView({
             >
               {/* tape decoration on top */}
               <div className="absolute rounded-[1px]" style={{ top: -6, left: '50%', marginLeft: -18, width: 36, height: 12, background: 'rgba(255,255,255,0.55)', transform: 'rotate(1deg)' }} />
-              <div className="text-center ts-12 font-bold text-[#4a3f2f] mb-3 tracking-[1px] uppercase">Select Format</div>
+              <div className="text-center ts-12 font-bold text-[#4a3f2f] mb-3 tracking-[1px] uppercase">选择画幅</div>
               <div className="flex gap-1.5 justify-center">
                 {[
                   { label: '正方', cls: 'ratio-square' },
@@ -1437,7 +1438,7 @@ function CharListView({
               }}
             >
               <div className="absolute rounded-[1px]" style={{ top: -6, left: '50%', marginLeft: -18, width: 36, height: 12, background: 'rgba(255,255,255,0.55)', transform: 'rotate(0.5deg)' }} />
-              <div className="text-center ts-12 font-bold text-[#4a3f2f] mb-3 tracking-[1px] uppercase">Add Props</div>
+              <div className="text-center ts-12 font-bold text-[#4a3f2f] mb-3 tracking-[1px] uppercase">添加道具</div>
               <div className="flex gap-1.5 justify-center flex-wrap">
                 {([
                   { type: 'a4' as const, label: '档案', w: 200, h: 280, scale: 0.16 },
@@ -1568,114 +1569,113 @@ function DraggableNode({
   function isPointerOverTrash(cx: number, cy: number): boolean {
     if (!trashBinRef?.current) return false;
     const rect = trashBinRef.current.getBoundingClientRect();
-    return cx >= rect.left && cx <= rect.right && cy >= rect.top && cy <= rect.bottom;
-  }
+            return cx >= rect.left && cx <= rect.right && cy >= rect.top && cy <= rect.bottom;
+    }
 
-  function handlePointerMove(e: React.PointerEvent) {
-    if (pinchRef?.current) {
-      if (isDragging) {
-        setIsDragging(false);
-        if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-          e.currentTarget.releasePointerCapture(e.pointerId);
+    function handlePointerMove(e: React.PointerEvent) {
+      if (pinchRef?.current) {
+        if (isDragging) {
+          setIsDragging(false);
+          if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+            e.currentTarget.releasePointerCapture(e.pointerId);
+          }
+          onDragActiveChange?.(false);
+          onOverTrashChange?.(false);
+          (e.currentTarget as HTMLElement).classList.remove('drag-over-trash');
         }
+        return;
+      }
+      if (!isDragging) return;
+      const dx = (e.clientX - dragStart.current.cx) / zoom;
+      const dy = (e.clientY - dragStart.current.cy) / zoom;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+        dragStart.current.moved = true;
+      }
+      setPos({ x: dragStart.current.startX + dx, y: dragStart.current.startY + dy });
+      onDragMoveAt?.(e.clientX, e.clientY);
+      if (typeof document !== 'undefined') {
+        const overTrash = isPointerOverTrash(e.clientX, e.clientY);
+        onOverTrashChange?.(overTrash);
+        if (overTrash) {
+          (e.currentTarget as HTMLElement).classList.add('drag-over-trash');
+        } else {
+          (e.currentTarget as HTMLElement).classList.remove('drag-over-trash');
+        }
+      }
+    }
+
+    function handlePointerUp(e: React.PointerEvent) {
+      if (!isDragging) return;
+      setIsDragging(false);
+      e.currentTarget.releasePointerCapture(e.pointerId);
+      if (typeof document !== 'undefined') {
         onDragActiveChange?.(false);
         onOverTrashChange?.(false);
         (e.currentTarget as HTMLElement).classList.remove('drag-over-trash');
-      }
-      return;
-    }
-    if (!isDragging) return;
-    const dx = (e.clientX - dragStart.current.cx) / zoom;
-    const dy = (e.clientY - dragStart.current.cy) / zoom;
-    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
-      dragStart.current.moved = true;
-    }
-    setPos({ x: dragStart.current.startX + dx, y: dragStart.current.startY + dy });
-    onDragMoveAt?.(e.clientX, e.clientY);
-    if (typeof document !== 'undefined') {
-      const overTrash = isPointerOverTrash(e.clientX, e.clientY);
-      onOverTrashChange?.(overTrash);
-      // Visual feedback on the dragged item itself
-      if (overTrash) {
-        (e.currentTarget as HTMLElement).classList.add('drag-over-trash');
-      } else {
-        (e.currentTarget as HTMLElement).classList.remove('drag-over-trash');
-      }
-    }
-  }
-  function handlePointerUp(e: React.PointerEvent) {
-    if (!isDragging) return;
-    setIsDragging(false);
-    e.currentTarget.releasePointerCapture(e.pointerId);
-    if (typeof document !== 'undefined') {
-      onDragActiveChange?.(false);
-      onOverTrashChange?.(false);
-      (e.currentTarget as HTMLElement).classList.remove('drag-over-trash');
 
-      if (isPointerOverTrash(e.clientX, e.clientY) && onDeleteIntent) {
-        onDeleteIntent(id);
-        setPos({ x: dragStart.current.startX, y: dragStart.current.startY });
+        if (isPointerOverTrash(e.clientX, e.clientY) && onDeleteIntent) {
+          onDeleteIntent(id);
+          setPos({ x: dragStart.current.startX, y: dragStart.current.startY });
+          return;
+        }
+        if (dragStart.current.moved && onDropAt?.(id, e.clientX, e.clientY)) {
+          setPos({ x: dragStart.current.startX, y: dragStart.current.startY });
+          return;
+        }
+      }
+      onDragEnd(id, pos.x, pos.y);
+    }
+
+    function handlePointerCancel(e: React.PointerEvent) {
+      if (!isDragging) return;
+      setIsDragging(false);
+      e.currentTarget.releasePointerCapture(e.pointerId);
+      if (typeof document !== 'undefined') {
+        onDragActiveChange?.(false);
+        onOverTrashChange?.(false);
+      }
+      onDragEnd(id, pos.x, pos.y);
+    }
+
+    function handleClick(e: React.MouseEvent<HTMLDivElement>) {
+      if (dragStart.current.moved) {
+        e.stopPropagation();
+        e.preventDefault();
         return;
       }
-      // 落点被外部消费（如拖到世界 tab 上归档）→ 位置回弹，不落坐标
-      if (dragStart.current.moved && onDropAt?.(id, e.clientX, e.clientY)) {
-        setPos({ x: dragStart.current.startX, y: dragStart.current.startY });
+      if ((e.target as HTMLElement).closest('.char-polaroid-menu-btn')) {
         return;
       }
+      if (isEditing) {
+        e.stopPropagation();
+        e.preventDefault();
+        if (onEditTap) onEditTap(id);
+        return;
+      }
+      if (onClick) onClick(e);
     }
-    onDragEnd(id, pos.x, pos.y);
-  }
-  function handlePointerCancel(e: React.PointerEvent) {
-    if (!isDragging) return;
-    setIsDragging(false);
-    e.currentTarget.releasePointerCapture(e.pointerId);
-    if (typeof document !== 'undefined') {
-      onDragActiveChange?.(false);
-      onOverTrashChange?.(false);
-    }
-    onDragEnd(id, pos.x, pos.y);
-  }
 
-  function handleClick(e: React.MouseEvent<HTMLDivElement>) {
-    if (dragStart.current.moved) {
-      e.stopPropagation();
-      e.preventDefault();
-      return;
-    }
-    if ((e.target as HTMLElement).closest('.char-polaroid-menu-btn')) {
-      return;
-    }
-    if (isEditing) {
-      e.stopPropagation();
-      e.preventDefault();
-      // 编辑模式下无位移的点按 → 拉线选点
-      if (onEditTap) onEditTap(id);
-      return;
-    }
-    if (onClick) onClick(e);
+    return (
+      <div
+        className={`${className || ''} absolute left-0 top-0 select-none`}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerCancel}
+        onClickCapture={handleClick}
+        style={{
+          width: w,
+          transform: `translate3d(${pos.x}px, ${pos.y}px, 0) rotate(${rot}deg)`,
+          zIndex: isDragging ? 9999999 : zIndex,
+          cursor: isDragging ? 'grabbing' : 'grab',
+          touchAction: 'none',
+          WebkitUserSelect: 'none'
+        }}
+      >
+        {children}
+      </div>
+    );
   }
-
-  return (
-    <div
-      className={`${className || ''} absolute left-0 top-0 select-none`}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerCancel}
-      onClickCapture={handleClick}
-      style={{
-        width: w,
-        transform: `translate3d(${pos.x}px, ${pos.y}px, 0) rotate(${rot}deg)`,
-        zIndex: isDragging ? 9999999 : zIndex,
-        cursor: isDragging ? 'grabbing' : 'grab',
-        touchAction: 'none',
-        WebkitUserSelect: 'none'
-      }}
-    >
-      {children}
-    </div>
-  )
-}
 
 
 // ── 绝密档案视图（详情页面） ─────────────────────────────────────────
@@ -1721,7 +1721,6 @@ function CharArchiveView({
   const [urlInput, setUrlInput] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // Send mascot page context (on mount + field changes)
   useEffect(() => {
     notifyMascotPageContext({
       page: "character",
@@ -1737,7 +1736,6 @@ function CharArchiveView({
     });
   }, [isEditing, name, persona, personality, timeZone, char.id]);
 
-  // Listen for mascot fill events (unified)
   useEffect(() => {
     const onFill = (e: Event) => {
       const { field, value } = (e as CustomEvent).detail;
@@ -1753,14 +1751,12 @@ function CharArchiveView({
     return () => window.removeEventListener("mascot-fill-field", onFill);
   }, []);
 
-  // Reset mascot context on unmount
   useEffect(() => {
     return () => {
       notifyMascotPageContext({ page: "desktop", mode: "idle", label: "桌面", fields: {} });
     };
   }, []);
 
-  // Dirty check — compare current edit state vs original char
   function isDirty(): boolean {
     if (!isEditing) return false;
     if (name !== (char.name || "")) return true;
@@ -1829,7 +1825,6 @@ function CharArchiveView({
         persona,
         personality: personality.trim() || undefined,
         briefPersona: trimmedBrief || undefined,
-        // 简介变动才刷新时间戳；未动则保留原值（供「设定已更新」过期提示判断）
         briefPersonaUpdatedAt: trimmedBrief
           ? (trimmedBrief !== (char.briefPersona || "").trim() ? new Date().toISOString() : char.briefPersonaUpdatedAt)
           : undefined,
@@ -1859,8 +1854,7 @@ function CharArchiveView({
     }
   }
 
-  // Helper limits
-  const personaText = persona || "NO DATA AVAILABLE.";
+  const personaText = persona || "暂无相关数据。";
   const timeZoneOptions = getCharacterTimeZoneOptions(timeZone || timeZoneSearch);
   const timeZoneQuery = timeZoneSearch.trim().toLowerCase();
   const matchedTimeZoneOptions = timeZoneQuery
@@ -1897,14 +1891,14 @@ function CharArchiveView({
 
   const archiveFrame = (
       <div className="char-archive-frame">
-        <div className="char-archive-stamp">CLASSIFIED</div>
+        <div className="char-archive-stamp">机密</div>
 
         <div className="char-archive-header">
           <div>
-            <div className="char-archive-title">{isEditing ? "EDITING ARCHIVE" : "ARCHIVAL\nINFORMATION"}</div>
-            <div className="char-archive-subtitle">THE INTELLIGENCE DATABASE</div>
+            <div className="char-archive-title">{isEditing ? "编辑档案" : "档案\n信息"}</div>
+            <div className="char-archive-subtitle">情报数据库</div>
           </div>
-          <div className="char-archive-id">ID: {char.id.slice(0, 8).toUpperCase()}</div>
+          <div className="char-archive-id">编号: {char.id.slice(0, 8).toUpperCase()}</div>
         </div>
 
         <div className="char-archive-body">
@@ -1926,7 +1920,7 @@ function CharArchiveView({
               {isEditing && (
                 <div className="absolute inset-0 bg-black/30 flex flex-col items-center justify-center pointer-events-none text-white">
                   <IconCamera size={24} />
-                  <span className="ts-10 mt-1">Change Photo</span>
+                  <span className="ts-10 mt-1">更换照片</span>
                 </div>
               )}
             </div>
@@ -1948,13 +1942,13 @@ function CharArchiveView({
                   className="ts-10 px-3 py-1 bg-[#111111] text-white border-none rounded-full cursor-pointer hover:bg-[#222222] transition-colors"
                   onClick={() => setShowUrlInput((v) => !v)}
                 >
-                  Use IMG URL
+                  使用图片链接
                 </button>
                 {showUrlInput && (
                   <div className="flex gap-1 mt-1">
                     <input
                       className="flex-1 ts-10 p-1 border border-[var(--c-input-border)] rounded w-full min-w-0"
-                      placeholder="Image URL..."
+                      placeholder="图片链接..."
                       value={urlInput}
                       onChange={(e) => setUrlInput(e.target.value)}
                       onKeyDown={(e) => {
@@ -1964,7 +1958,7 @@ function CharArchiveView({
                     <button
                       className="ts-10 px-2 py-1 bg-[#444] text-white border-none rounded cursor-pointer"
                       onClick={handleAvatarUrl}
-                    >OK</button>
+                    >确定</button>
                   </div>
                 )}
               </div>
@@ -1972,13 +1966,12 @@ function CharArchiveView({
           </div>
           <div className="char-archive-right flex-1 flex flex-col">
 
-            {/* Name Box moved to the top of Right Column */}
             <div className="char-archive-name-box flex-1 flex flex-col justify-center text-left border-b border-[var(--c-panel-border)]" style={{ padding: "4px 6px 8px 6px" }}>
-              <span className="ts-8 text-[var(--c-text)] font-mono block mb-0.5">TARGET NAME / CODENAME</span>
+              <span className="ts-8 text-[var(--c-text)] font-mono block mb-0.5">目标名称 / 代号</span>
               {isEditing ? (
                 <input
                   className="char-archive-input ts-20 font-black w-full text-left bg-[var(--c-input)]/50 border border-dashed border-[#666] font-inherit tracking-[1px]"
-                  placeholder="Name or Codename"
+                  placeholder="姓名或代号"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   style={{
@@ -1987,25 +1980,25 @@ function CharArchiveView({
                 />
               ) : (
                 <h2 className="whitespace-pre-wrap break-words ts-20 font-black m-0 tracking-[1px]">
-                  {name || "UNNAMED"}
+                  {name || "未命名"}
                 </h2>
               )}
             </div>
 
             <div className="char-archive-row">
               <div className="char-archive-cell" style={{ flex: 0.8 }}>
-                <span className="char-archive-label">Status</span>
-                <span className="char-archive-val">{isEditing ? "EDITING" : "ACTIVE"}</span>
+                <span className="char-archive-label">状态</span>
+                <span className="char-archive-val">{isEditing ? "编辑中" : "活跃"}</span>
               </div>
               <div className="char-archive-cell" style={{ flex: 1.5 }}>
-                <span className="char-archive-label">WeChat</span>
+                <span className="char-archive-label">微信</span>
                 <span className="char-archive-val select-text cursor-text tracking-[-0.5px]">
-                  {char.wechatID || "N/A"}
+                  {char.wechatID || "未设置"}
                 </span>
               </div>
               <div className="char-archive-cell" style={{ flex: 1.1 }}>
-                <span className="char-archive-label">Update</span>
-                <span className="char-archive-val">{char.updatedAt ? char.updatedAt.slice(0, 10).replace(/-/g, "/") : "N/A"}</span>
+                <span className="char-archive-label">更新</span>
+                <span className="char-archive-val">{char.updatedAt ? char.updatedAt.slice(0, 10).replace(/-/g, "/") : "未设置"}</span>
               </div>
             </div>
 
@@ -2014,7 +2007,7 @@ function CharArchiveView({
 
         <div className="char-archive-row">
           <div className="char-archive-cell" style={{ flex: 1.8 }}>
-            <span className="char-archive-label">Tags</span>
+            <span className="char-archive-label">标签</span>
             <div className="flex flex-wrap gap-2">
               {tags.map((t, i) => (
                 <div key={i} className="char-archive-tag">
@@ -2028,7 +2021,7 @@ function CharArchiveView({
                 </div>
               ))}
               {tags.length === 0 && !isEditing && (
-                <span className="char-archive-val opacity-50">N/A</span>
+                <span className="char-archive-val opacity-50">未设置</span>
               )}
               {isEditing && (
                 <div className="flex gap-1 w-full mt-1">
@@ -2037,15 +2030,15 @@ function CharArchiveView({
                     value={tagInput}
                     onChange={e => setTagInput(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddTag(); } }}
-                    placeholder="Add tag..."
+                    placeholder="添加标签..."
                   />
-                  <button onClick={handleAddTag} className="bg-[#4a3f2f] text-white border-none rounded-[2px] px-2 ts-10 cursor-pointer">ADD</button>
+                  <button onClick={handleAddTag} className="bg-[#4a3f2f] text-white border-none rounded-[2px] px-2 ts-10 cursor-pointer">添加</button>
                 </div>
               )}
             </div>
           </div>
           <div className="char-archive-cell" style={{ flex: 1.2 }}>
-            <span className="char-archive-label">Timezone</span>
+            <span className="char-archive-label">时区</span>
             {isEditing ? (
               <div className="char-timezone-picker">
                 <button
@@ -2053,26 +2046,25 @@ function CharArchiveView({
                   className="char-timezone-trigger"
                   onClick={openTimeZonePicker}
                 >
-                  {timeZone || "SYSTEM"}
+                  {timeZone || "系统"}
                 </button>
               </div>
             ) : (
-              <span className="char-archive-val">{timeZone || "SYSTEM"}</span>
+              <span className="char-archive-val">{timeZone || "系统"}</span>
             )}
           </div>
         </div>
 
-        {/* Persona Section (Full Width) */}
         <div className="char-archive-text-section border-b-0">
           <div className="char-log-entry mb-4">
             <div className="char-log-entry-header">
-              <span>PERSONA / TRAITS</span>
+              <span>角色设定 / 特质</span>
             </div>
             {isEditing ? (
               <AutoResizingTextarea
                 value={persona}
                 onChange={setPersona}
-                placeholder="Describe background, personality..."
+                placeholder="描述背景、性格..."
                 minHeight={120}
                 style={{
                   width: "100%", background: "color-mix(in srgb, var(--c-input) 50%, transparent)",
@@ -2085,17 +2077,16 @@ function CharArchiveView({
             )}
           </div>
 
-          {/* Personality — shown when editing or when has content */}
           {(isEditing || personality.trim()) && (
             <div className="char-log-entry mb-4 border-t border-dashed border-[#999] pt-3">
               <div className="char-log-entry-header">
-                <span>PERSONALITY</span>
+                <span>性格</span>
               </div>
               {isEditing ? (
                 <AutoResizingTextarea
                   value={personality}
                   onChange={setPersonality}
-                  placeholder="Character personality traits..."
+                  placeholder="角色性格特质..."
                   minHeight={60}
                   style={{
                     width: "100%", background: "color-mix(in srgb, var(--c-input) 50%, transparent)",
@@ -2109,11 +2100,10 @@ function CharArchiveView({
             </div>
           )}
 
-          {/* 简量人设 — 注入到同世界有关系角色的上下文，防对方 OOC */}
           {(isEditing || briefPersona.trim()) && (
             <div className="char-log-entry mb-4 border-t border-dashed border-[#999] pt-3">
               <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
-                <span className="char-log-entry-header !mb-0">BRIEF PERSONA / 简量人设</span>
+                <span className="char-log-entry-header !mb-0">简量人设 / 简要人设</span>
                 {isEditing && (
                   <button
                     className="ts-10 px-3 py-1 bg-[#111111] text-white border-none rounded-full cursor-pointer disabled:opacity-50 hover:bg-[#222222] transition-colors"
@@ -2152,21 +2142,21 @@ function CharArchiveView({
         <div className="char-archive-actions">
           {!dummy && confirmDelete ? (
             <div className="char-confirm-row">
-              <span className="char-confirm-text">CONFIRM DELETE?</span>
-              <button className="char-confirm-yes" onClick={onDelete}>YES</button>
-              <button className="char-confirm-no" onClick={() => setConfirmDelete(false)}>NO</button>
+              <span className="char-confirm-text">确认删除？</span>
+              <button className="char-confirm-yes" onClick={onDelete}>是</button>
+              <button className="char-confirm-no" onClick={() => setConfirmDelete(false)}>否</button>
             </div>
           ) : (
             !dummy && isEditing ? (
               <>
-                <button className="char-archive-btn char-archive-btn-danger" onClick={() => { if (isDirty()) { setShowUnsavedConfirm("cancel"); } else { onCancelEdit?.(); } }}>CANCEL</button>
-                <button className="char-archive-btn bg-[var(--c-text)] text-[var(--c-page-body-bg)] border-[var(--c-input-border)]" onClick={handleSave}>SAVE</button>
+                <button className="char-archive-btn char-archive-btn-danger" onClick={() => { if (isDirty()) { setShowUnsavedConfirm("cancel"); } else { onCancelEdit?.(); } }}>取消</button>
+                <button className="char-archive-btn bg-[var(--c-text)] text-[var(--c-page-body-bg)] border-[var(--c-input-border)]" onClick={handleSave}>保存</button>
               </>
             ) : !dummy && !isEditing ? (
               <>
-                <button className="char-archive-btn" onClick={onExportPng}>EXPORT IMG</button>
-                <button className="char-archive-btn" onClick={onExportJson}>EXPORT JSON</button>
-                <button className="char-archive-btn char-archive-btn-danger" onClick={() => setConfirmDelete(true)}>DELETE</button>
+                <button className="char-archive-btn" onClick={onExportPng}>导出图片</button>
+                <button className="char-archive-btn" onClick={onExportJson}>导出JSON</button>
+                <button className="char-archive-btn char-archive-btn-danger" onClick={() => setConfirmDelete(true)}>删除</button>
               </>
             ) : null
           )}
@@ -2204,8 +2194,8 @@ function CharArchiveView({
         >
           <div className="char-timezone-sheet" role="dialog" aria-modal="true" aria-label="Timezone">
             <div className="char-timezone-sheet-header">
-              <span>TIMEZONE</span>
-              <button type="button" onClick={closeTimeZonePicker}>CLOSE</button>
+              <span>时区</span>
+              <button type="button" onClick={closeTimeZonePicker}>关闭</button>
             </div>
             <input
               className="char-timezone-search"
@@ -2225,8 +2215,8 @@ function CharArchiveView({
               autoFocus
             />
             <div className="char-timezone-sheet-actions">
-              <button type="button" onClick={clearTimeZone}>SYSTEM</button>
-              <button type="button" onClick={applyTimeZoneSearch}>DONE</button>
+              <button type="button" onClick={clearTimeZone}>系统</button>
+              <button type="button" onClick={applyTimeZoneSearch}>确定</button>
             </div>
             <div className="char-timezone-options" role="listbox">
               {filteredTimeZoneOptions.length > 0 ? (
@@ -2244,20 +2234,17 @@ function CharArchiveView({
                     </button>
                   ))}
                   {hasMoreTimeZoneOptions && (
-                    <div className="char-timezone-more">MORE RESULTS</div>
+                    <div className="char-timezone-more">更多结果</div>
                   )}
                 </>
               ) : (
-                <div className="char-timezone-empty">NO MATCHES</div>
+                <div className="char-timezone-empty">无匹配结果</div>
               )}
             </div>
           </div>
         </div>
       )}
 
-
-
-      {/* Unsaved changes confirmation dialog */}
       {showUnsavedConfirm && (
         <ConfirmDialog
           title="确定要放弃编辑吗？"
@@ -2278,8 +2265,6 @@ function CharArchiveView({
     </PageShell>
   );
 }
-
-// The CharEditView component has been removed as editing is now inline within CharArchiveView.
 
 // ── 共享子组件 ───────────────────────────────────────
 
@@ -2317,9 +2302,6 @@ function AutoResizingTextarea({
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // useLayoutEffect（绘制前同步执行）：把"塌成一行→撑回真实高度"放在同一帧、绘制之前完成，
-  // 避免某些内核（如小米浏览器）把中间那帧的高度骤减画出来、并因文档变矮把视口往上夹/拉。
-  // 同时记录并还原最近可滚动祖先的 scrollTop，作为对 reflow 滚动锚定的额外保护。
   useLayoutEffect(() => {
     const ta = textareaRef.current;
     if (!ta) return;
@@ -2381,10 +2363,9 @@ function fileToDataUrl(file: File): Promise<string> {
         if (!ctx) return resolve(reader.result as string);
         ctx.drawImage(img, 0, 0, w, h);
 
-        // Use webp or jpeg to heavily compress large png files before saving to localstorage
         resolve(canvas.toDataURL("image/webp", 0.8));
       };
-      img.onerror = () => resolve(reader.result as string); // fallback to raw
+      img.onerror = () => resolve(reader.result as string);
       img.src = reader.result as string;
     };
     reader.onerror = reject;
@@ -2451,11 +2432,7 @@ function IconTrash({ size = 20 }: { size?: number }) {
   );
 }
 
-// ── 组件实现 ─────────────────────────────────────────────
-
 // ── NPC 生成器 ─────────────────────────────────────────────
-// 「生成配角」弹层：选目标角色 + 可选要求 → LLM 生成完整角色卡 → 预览可编辑 → 确认落库。
-// 生成逻辑见 lib/npc-generator.ts；落库动作在父组件 handleNpcGenerated。
 function NpcGeneratorSheet({ characters, onClose, onConfirm }: {
   characters: Character[];
   onClose: () => void;
@@ -2494,7 +2471,7 @@ function NpcGeneratorSheet({ characters, onClose, onConfirm }: {
   const removeAt = (index: number) => {
     setResults(prev => {
       const next = prev ? prev.filter((_, i) => i !== index) : prev;
-      return next && next.length > 0 ? next : null; // 全删了就回到生成表单
+      return next && next.length > 0 ? next : null;
     });
   };
   const confirmDisabled = busy
@@ -2509,132 +2486,130 @@ function NpcGeneratorSheet({ characters, onClose, onConfirm }: {
     >
       <div
         className="wt-paper"
-        onClick={e => e.stopPropagation()}
-      >
-        <div className="wt-paper-tape" />
-        <div className="wt-paper-kicker text-center">
-          {results ? "REVIEW NPC" : "GENERATE NPC"}
-        </div>
+        onClick={e => e.stopPropagation()}>
+      <div className="wt-paper-tape" />
+      <div className="wt-paper-kicker text-center">
+        {results ? "预览NPC" : "生成NPC"}
+      </div>
 
-        {!results ? (
-          <div className="flex flex-col">
-            <label className="wt-paper-label">为哪位角色生成配角</label>
-            <select className="wt-paper-input" value={targetId} onChange={e => setTargetId(e.target.value)}>
-              {characters.map(c => (
-                <option key={c.id} value={c.id}>{c.name || "未命名角色"}</option>
-              ))}
-            </select>
-            <label className="wt-paper-label mt-2">生成数量</label>
-            <div className="flex gap-2">
-              {[1, 2, 3, 4, 5].map(n => (
-                <button
-                  key={n}
-                  type="button"
-                  className={`wt-btn flex-1 ${count === n ? "wt-btn-primary" : ""}`}
-                  onClick={() => setCount(n)}
-                >
-                  {n}
-                </button>
-              ))}
-            </div>
-            <label className="wt-paper-label mt-2">补充要求（可选）</label>
-            <textarea
-              className="wt-paper-textarea"
-              style={{ minHeight: 64 }}
-              placeholder="例如：生成一个损友 / 她的亲妹妹 / 暗恋她的学长…"
-              value={hint}
-              onChange={e => setHint(e.target.value)}
-            />
-            <p className="wt-paper-hint mt-1">会带上 TA 的核心记忆与相关长期记忆——记忆里提过的人是最好的配角素材。</p>
-            {error && <p className="wt-paper-confirm mt-2">{error}</p>}
-
-            <div className="wt-paper-actions mt-4">
-              <button className="wt-btn flex-1" onClick={onClose} disabled={busy}>取消</button>
+      {!results ? (
+        <div className="flex flex-col">
+          <label className="wt-paper-label">为哪位角色生成配角</label>
+          <select className="wt-paper-input" value={targetId} onChange={e => setTargetId(e.target.value)}>
+            {characters.map(c => (
+              <option key={c.id} value={c.id}>{c.name || "未命名角色"}</option>
+            ))}
+          </select>
+          <label className="wt-paper-label mt-2">生成数量</label>
+          <div className="flex gap-2">
+            {[1, 2, 3, 4, 5].map(n => (
               <button
-                className="wt-btn wt-btn-primary flex-1"
-                onClick={handleGenerate}
-                disabled={busy || !targetId}
+                key={n}
+                type="button"
+                className={`wt-btn flex-1 ${count === n ? "wt-btn-primary" : ""}`}
+                onClick={() => setCount(n)}
               >
-                {busy ? "生成中…" : "生成"}
+                {n}
               </button>
-            </div>
-            {characters.length === 0 && <p className="wt-paper-hint mt-2">还没有角色，先创建一位主角。</p>}
+            ))}
           </div>
-        ) : (
-          <div className="flex flex-col">
-            {results.map((result, index) => (
-              <div key={index} className={index > 0 ? "mt-4 pt-3" : ""} style={index > 0 ? { borderTop: "1px dashed #c9b98a" } : undefined}>
-                <div className="flex items-center">
-                  <span className="wt-paper-kicker" style={{ marginBottom: 0 }}>NPC {index + 1} / {results.length}</span>
-                  <span className="wt-paper-spacer" />
-                  {results.length > 1 && (
-                    <button type="button" className="wt-btn wt-btn-danger wt-btn-small" onClick={() => removeAt(index)}>
-                      移除
-                    </button>
-                  )}
+          <label className="wt-paper-label mt-2">补充要求（可选）</label>
+          <textarea
+            className="wt-paper-textarea"
+            style={{ minHeight: 64 }}
+            placeholder="例如：生成一个损友 / 她的亲妹妹 / 暗恋她的学长…"
+            value={hint}
+            onChange={e => setHint(e.target.value)}
+          />
+          <p className="wt-paper-hint mt-1">会带上 TA 的核心记忆与相关长期记忆——记忆里提过的人是最好的配角素材。</p>
+          {error && <p className="wt-paper-confirm mt-2">{error}</p>}
+
+          <div className="wt-paper-actions mt-4">
+            <button className="wt-btn flex-1" onClick={onClose} disabled={busy}>取消</button>
+            <button
+              className="wt-btn wt-btn-primary flex-1"
+              onClick={handleGenerate}
+              disabled={busy || !targetId}
+            >
+              {busy ? "生成中…" : "生成"}
+            </button>
+          </div>
+          {characters.length === 0 && <p className="wt-paper-hint mt-2">还没有角色，先创建一位主角。</p>}
+        </div>
+      ) : (
+        <div className="flex flex-col">
+          {results.map((result, index) => (
+            <div key={index} className={index > 0 ? "mt-4 pt-3" : ""} style={index > 0 ? { borderTop: "1px dashed #c9b98a" } : undefined}>
+              <div className="flex items-center">
+                <span className="wt-paper-kicker" style={{ marginBottom: 0 }}>配角 {index + 1} / {results.length}</span>
+                <span className="wt-paper-spacer" />
+                {results.length > 1 && (
+                  <button type="button" className="wt-btn wt-btn-danger wt-btn-small" onClick={() => removeAt(index)}>
+                    移除
+                  </button>
+                )}
+              </div>
+
+              <label className="wt-paper-label mt-2">名字</label>
+              <input className="wt-paper-input" value={result.name} onChange={e => patchAt(index, { name: e.target.value })} />
+
+              <label className="wt-paper-label mt-2">人设（完整角色卡）</label>
+              <textarea
+                className="wt-paper-textarea"
+                style={{ minHeight: 120 }}
+                value={result.persona}
+                onChange={e => patchAt(index, { persona: e.target.value })}
+              />
+
+              <label className="wt-paper-label mt-2">性格</label>
+              <input className="wt-paper-input" value={result.personality} onChange={e => patchAt(index, { personality: e.target.value })} />
+
+              <label className="wt-paper-label mt-2">简量人设（注入给同世界角色）</label>
+              <textarea
+                className="wt-paper-textarea"
+                style={{ minHeight: 64 }}
+                value={result.briefPersona}
+                onChange={e => patchAt(index, { briefPersona: e.target.value })}
+              />
+
+              <div className="flex gap-2 mt-2">
+                <div className="flex-1 flex flex-col">
+                  <label className="wt-paper-label">TA 是{targetName}的</label>
+                  <input className="wt-paper-input" value={result.relationLabel} onChange={e => patchAt(index, { relationLabel: e.target.value })} />
                 </div>
-
-                <label className="wt-paper-label mt-2">名字</label>
-                <input className="wt-paper-input" value={result.name} onChange={e => patchAt(index, { name: e.target.value })} />
-
-                <label className="wt-paper-label mt-2">人设（完整角色卡）</label>
-                <textarea
-                  className="wt-paper-textarea"
-                  style={{ minHeight: 120 }}
-                  value={result.persona}
-                  onChange={e => patchAt(index, { persona: e.target.value })}
-                />
-
-                <label className="wt-paper-label mt-2">性格</label>
-                <input className="wt-paper-input" value={result.personality} onChange={e => patchAt(index, { personality: e.target.value })} />
-
-                <label className="wt-paper-label mt-2">简量人设（注入给同世界角色）</label>
-                <textarea
-                  className="wt-paper-textarea"
-                  style={{ minHeight: 64 }}
-                  value={result.briefPersona}
-                  onChange={e => patchAt(index, { briefPersona: e.target.value })}
-                />
-
-                <div className="flex gap-2 mt-2">
-                  <div className="flex-1 flex flex-col">
-                    <label className="wt-paper-label">TA 是{targetName}的</label>
-                    <input className="wt-paper-input" value={result.relationLabel} onChange={e => patchAt(index, { relationLabel: e.target.value })} />
-                  </div>
-                  <div className="flex-1 flex flex-col">
-                    <label className="wt-paper-label">{targetName}是 TA 的</label>
-                    <input className="wt-paper-input" value={result.reverseRelationLabel} onChange={e => patchAt(index, { reverseRelationLabel: e.target.value })} />
-                  </div>
+                <div className="flex-1 flex flex-col">
+                  <label className="wt-paper-label">{targetName}是 TA 的</label>
+                  <input className="wt-paper-input" value={result.reverseRelationLabel} onChange={e => patchAt(index, { reverseRelationLabel: e.target.value })} />
                 </div>
               </div>
-            ))}
-
-            <label className="flex items-center gap-2 mt-3 wt-paper-label" style={{ fontWeight: 'normal' }}>
-              <input type="checkbox" checked={allowAutoPost} onChange={e => setAllowAutoPost(e.target.checked)} />
-              加好友后允许自动发朋友圈（本批全部生效）
-            </label>
-
-            {error && <p className="wt-paper-confirm mt-2">{error}</p>}
-
-            <div className="wt-paper-actions mt-4">
-              <button className="wt-btn flex-1" onClick={handleGenerate} disabled={busy}>
-                {busy ? "生成中…" : "重新生成"}
-              </button>
-              <button
-                className="wt-btn wt-btn-primary flex-1"
-                disabled={confirmDisabled}
-                onClick={() => results && onConfirm(results, targetId, allowAutoPost)}
-              >
-                {results.length > 1 ? `确认创建 ${results.length} 位` : "确认创建"}
-              </button>
             </div>
+          ))}
 
-            <div className="flex mt-2">
-              <button className="wt-btn flex-1" onClick={onClose} disabled={busy}>取消</button>
-            </div>
+          <label className="flex items-center gap-2 mt-3 wt-paper-label" style={{ fontWeight: 'normal' }}>
+            <input type="checkbox" checked={allowAutoPost} onChange={e => setAllowAutoPost(e.target.checked)} />
+            加好友后允许自动发朋友圈（本批全部生效）
+          </label>
+                    {error && <p className="wt-paper-confirm mt-2">{error}</p>}
+
+          <div className="wt-paper-actions mt-4">
+            <button className="wt-btn flex-1" onClick={handleGenerate} disabled={busy}>
+              {busy ? "生成中…" : "重新生成"}
+            </button>
+            <button
+              className="wt-btn wt-btn-primary flex-1"
+              disabled={confirmDisabled}
+              onClick={() => results && onConfirm(results, targetId, allowAutoPost)}
+            >
+              {results.length > 1 ? `确认创建 ${results.length} 位` : "确认创建"}
+            </button>
           </div>
-        )}
-      </div>
+
+          <div className="flex mt-2">
+            <button className="wt-btn flex-1" onClick={onClose} disabled={busy}>取消</button>
+          </div>
+        </div>
+      )}
     </div>
-  );
-}
+  </div>
+);
+    }
