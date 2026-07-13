@@ -534,4 +534,26 @@ export function ChatContactsList({ onCloseApp, onSelectSession, onSelectMascot, 
                                                     } else {
                                                         pushChatMessage({ sessionId: newSession.id, role: "system", content: `${userName}已添加了${addResult.name || "用户"}，现在可以开始聊天了。`, status: "sent" });
                                                     }
-       
+                                                           if (greetingText.trim()) {
+                                                        pushChatMessage({ sessionId: newSession.id, role: "user", content: greetingText.trim(), status: "sent" });
+                                                    }
+                                                    refresh();
+                                                    onSelectSession(newSession);
+                                                    addFromCardRef.current = false;
+                                                    setIsAddFriendOpen(false);
+                                                }}
+                                                className="ui-btn ui-btn-success w-full"
+                                            >发送</button>
+                                            <button onClick={() => setIsSendingAdd(false)} className="ui-btn ui-btn-ghost w-full">取消</button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
