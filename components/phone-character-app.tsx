@@ -1370,7 +1370,7 @@ function CharListView({
               <div className="text-center ts-12 font-bold text-[#4a3f2f] mb-3 tracking-[1px] uppercase">选择画幅</div>
               <div className="flex gap-1.5 justify-center">
                 {[
-                  { label: '正方', cls: 'ratio-square' },
+                  { label: '正方形', cls: 'ratio-square' },
                   { label: '竖版', cls: 'ratio-portrait' },
                   { label: '横版', cls: 'ratio-landscape' },
                   { label: '16:9', cls: 'ratio-16-9' },
