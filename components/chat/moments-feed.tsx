@@ -283,14 +283,12 @@ export function MomentsFeed({ onCloseApp }: MomentsFeedProps) {
         return () => bodyEl.removeEventListener('scroll', handleScroll);
     }, [getScrollElement]);
 
-    // Load posts + start background service + load cover
     useEffect(() => {
         refreshPosts();
 
         const handler = () => refreshPosts();
         window.addEventListener("moments-updated", handler);
 
-        // Load saved cover image
         const savedId = kvGet(COVER_ASSET_KEY);
         if (savedId) {
             getChatImageFromIndexedDB(savedId).then(url => {
@@ -303,14 +301,12 @@ export function MomentsFeed({ onCloseApp }: MomentsFeedProps) {
         };
     }, [refreshPosts]);
 
-    // Hide tab bar only when the full compose page is open.
     useEffect(() => {
         window.dispatchEvent(new CustomEvent("chat-hide-tabbar", { detail: showCompose }));
         return () => {
             window.dispatchEvent(new CustomEvent("chat-hide-tabbar", { detail: false }));
         };
     }, [showCompose]);
-
 
     const handleDeleteConfirm = () => {
         if (confirmDeleteId) {
@@ -357,7 +353,6 @@ export function MomentsFeed({ onCloseApp }: MomentsFeedProps) {
             }, "image/jpeg", 0.8);
         };
         img.src = objectUrl;
-        // Reset so same file can be re-selected
         e.target.value = "";
     };
 
@@ -374,10 +369,8 @@ export function MomentsFeed({ onCloseApp }: MomentsFeedProps) {
                     type="button"
                     aria-label="发布朋友圈"
                 >
-                    <svg width={22} height={22} viewBox="0 0 24 24" fill="none" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" stroke="currentColor">
-                        <circle cx="12" cy="12" r="10" />
-                        <line x1="12" y1="8" x2="12" y2="16" />
-                        <line x1="8" y1="12" x2="16" y2="12" />
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M4 6h3.2l1.4-2h6.8l1.4 2H20c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V8c0-1.1.9-2 2-2zm8 11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0-2c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/>
                     </svg>
                 </button>
             }
@@ -474,7 +467,7 @@ export function MomentsFeed({ onCloseApp }: MomentsFeedProps) {
                         </span>
                         
                         {/* 微信方圆头像 */}
-                        <div className="w-[72px] h-[72px] rounded-[12px] bg-[#f0f0f0] overflow-hidden flex items-center justify-center pointer-events-auto shrink-0 shadow-sm">
+                        <div className="w-[72px] h-[72px] rounded-[8px] bg-[#f0f0f0] overflow-hidden flex items-center justify-center pointer-events-auto shrink-0 shadow-sm">
                             {userIdentity?.avatarUrl ? (
                                 <img src={userIdentity.avatarUrl} alt="" className="w-full h-full object-cover" />
                             ) : (
