@@ -2563,7 +2563,7 @@ function NpcGeneratorSheet({ characters, onClose, onConfirm }: {
               <label className="wt-paper-label mt-2">性格</label>
               <input className="wt-paper-input" value={result.personality} onChange={e => patchAt(index, { personality: e.target.value })} />
 
-              <label className="wt-paper-label mt-2">简量人设（注入给同世界角色）</label>
+              <label className="wt-paper-label mt-2">简量人设测试123（注入给同世界角色）</label>
               <textarea
                 className="wt-paper-textarea"
                 style={{ minHeight: 64 }}
